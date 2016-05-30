@@ -34,11 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 from __future__ import print_function
 from scribe import scribe
-from thrift.transport import TTransport, TSocket
-from thrift.protocol import TBinaryProtocol
+from thrift3babeltrace.transport import TTransport, TSocket
+from thrift3babeltrace.protocol import TBinaryProtocol
 import base64
 import ipaddress
-from kafka import SimpleProducer, KafkaClient
 from scribe_logger.logger import ScribeLogHandler
 import logging
 

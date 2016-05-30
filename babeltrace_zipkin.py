@@ -48,7 +48,7 @@ thrift_filepath = os.path.join(os.path.dirname(__file__),
                                'zipkinCore.thrift')
 zipkin_core = thriftpy.load(thrift_filepath, module_name="zipkinCore_thrift")
 
-HELP = "Usage: python babeltrace_zipkin.py path/to/file -s <server> -p <port>"
+HELP = "Usage: python3 babeltrace_zipkin.py path/to/file -s <server> -p <port>"
 
 
 def generate_annotation_lists(zipkin, events, spans, annotations_dict, binary_annotations_dict):
@@ -72,6 +72,10 @@ def generate_annotation_lists(zipkin, events, spans, annotations_dict, binary_an
         ip = event["ip"]
         #Use CS as default value for Zipkin annotations
         value = "cs"
+        if "core_annotation" in event:
+            value =  event["core_annotation"]
+        if "event" in event:
+            event_name = event["event"]
         timestamp = str(event.timestamp)[:-3]
         key = str(span_id) + ":" + str(trace_id) + ":" + str(parent_span_id) + ":" + service_name 
         
@@ -86,11 +90,11 @@ def generate_annotation_lists(zipkin, events, spans, annotations_dict, binary_an
             continue
 
         # Create and add the annotation to the dictionaries of annotations
-        if (kind == "keyval"):
-            annotation = zipkin.create_binary_annotation(service_name, ip, port, event["key"], event["val"])
+        if (kind == "keyval_integer" or kind == "keyval_string"):
+            annotation = zipkin.create_binary_annotation(service_name, ip, port, event["key"], str(event["val"]))
             binary_annotations_dict[key].append(annotation)
-        if (kind == "timestamp"):
-            annotation = zipkin.create_time_annotation(service_name, ip, port, timestamp, value)
+        elif (kind == "timestamp" or kind == "timestamp_core"):
+            annotation = zipkin.create_time_annotation(service_name, ip, port, timestamp, event_name)
             annotations_dict[key].append(annotation)
 
 def main(argv):
@@ -139,7 +143,6 @@ def main(argv):
 
     # Iterate over the set to get and send the corresponding annotations of each span
     for span in spans:
-        print(span)
         try:
             span_id, trace_id, parent_span_id, service_name = span.split(":")
         except:
