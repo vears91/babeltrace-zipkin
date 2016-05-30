@@ -22,6 +22,7 @@ pip3 install facebook-scribe
 ```
 Other requirements:
 * [Babeltrace](http://diamon.org/babeltrace/#getting), for reading the LTTng traces.
+* [Zipkin](https://github.com/openzipkin/zipkin), for receiving and visualizing the traces.
 
 ## License
 
