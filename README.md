@@ -16,7 +16,7 @@ Download the project using `git clone https://github.com/vears91/babeltrace-zipk
 For compatibility with Python3, this project uses [Thriftpy](https://github.com/eleme/thriftpy) and some modifications to Python's Thrift library.
 You can easily install them with pip3:
 ```
-pip3 install thrift3-binary-protocol
+pip3 install thrift3babeltrace
 pip3 install thriftpy
 pip3 install facebook-scribe
 ```
