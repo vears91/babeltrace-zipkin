@@ -31,7 +31,7 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 '''
 
-
+    
 from __future__ import print_function
 from scribe import scribe
 from thrift3babeltrace.transport import TTransport, TSocket
@@ -62,6 +62,7 @@ class ScribeClient(object):
 
 
     def log(self, category, message):
+        self.transport.open()
         message = base64.b64encode(message).strip()
         log_entry = scribe.LogEntry(category, message)
         result = self.client.Log(messages=[log_entry])
