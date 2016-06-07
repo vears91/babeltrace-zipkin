@@ -52,12 +52,12 @@ class DummySpan:
         self.endpoint = create_endpoint("0.0.0.0", 0, service_name)
 
     def createChild(self, serviceName):
-    """
-    Creates a child span from this span.
+        """
+        Creates a child span from this span.
 
-    :param serviceName: Descriptive name of the service of the endpoint for the child.
-    :returns: DummySpan with parent_id set to the ID of this span.
-    """              
+        :param serviceName: Descriptive name of the service of the endpoint for the child.
+        :returns: DummySpan with parent_id set to the ID of this span.
+        """              
         return DummySpan(serviceName, self.span_id)    
 
     def addAnnotation(self, value, timeOffset):
