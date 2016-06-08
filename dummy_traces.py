@@ -117,7 +117,7 @@ def getConfigurationOptions(configDictionary, configFile):
         configDictionary = dict(line.strip().split('=') for line in open(configFile))
 
     if not "root" in configDictionary:
-        configDictionary["rootTraceName"] = "master"
+        configDictionary["rootTraceName"] = "dummy root span"
 
 def main(argv):
 
@@ -161,8 +161,13 @@ def main(argv):
             # No more spans to process, we are done.
             print("Root span has been sent to Zipkin. Quitting now.".center(int(columns),'*'))        
             return
-        os.system('clear')    
-        print("Main menu".center(int(columns),'*'))        
+        os.system('clear')
+        print("Main menu".center(int(columns),'*')) 
+        print("Current context:")
+        print(("Trace ID: "+str(currentSpan.trace_id)))
+        print(("Parent ID: "+str(currentSpan.parent_id)))
+        print(("Service name: "+str(currentSpan.service_name)))
+
         print("""
 
             1. Add annotation
@@ -209,6 +214,7 @@ def main(argv):
         elif (option == "6"):
             print("Help".center(int(columns),'*'))
             print("""
+                This tool allows you to send dummy traces to Zipkin. Initially, the application begins with a root span. You might add annotations, binary_annotations or child spans.
                 """)
         else:
             print("Please enter a valid option")
