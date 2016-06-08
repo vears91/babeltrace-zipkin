@@ -60,7 +60,7 @@ def create_endpoint(ipv4, port, service_name):
 
 
 
-def create_span(span_id, parent_span_id, trace_id, span_name, annotations, binary_annotations):
+def create_span(span_id, parent_span_id, trace_id, span_name, annotations, binary_annotations, timestamp=None):
     """
     Creates a zipkin span object.
 
@@ -76,6 +76,7 @@ def create_span(span_id, parent_span_id, trace_id, span_name, annotations, binar
         "id": span_id,
         "annotations": annotations,
         "binary_annotations": binary_annotations,
+        "timestamp": timestamp
     }
     if parent_span_id:
         span_dict["parent_id"] = (parent_span_id)
