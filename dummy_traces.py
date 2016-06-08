@@ -40,6 +40,31 @@ from zipkin_client import ZipkinClient
 from thriftpy_utils import *
 from pprint import pprint
 
+helpString = (
+'This tool allows you to send dummy traces to Zipkin. The application begins '
+'with a root span. You might add annotations, binary_annotations or child spans. '
+'When you add a child span, the current context is changed to the child and the '
+'annotations are added to it. To return to the previous level, send the span to Zipkin.\n'
+'1) Add an annotation\n\n'
+'Annotations represent an event with a timestamp. The value is a short description of the event ' 
+'or the value of a core annotation defined in Zipkin\'s Thrift specification (like "cs" for Client ' 
+'Start or "ss" for Server Send).\n\n'
+'2) Add binary annotation\n'
+'Binary annotations are key-value pairs used to augment the context of what is happening in '
+'a span.\n\n'
+'3) Creating a child span\n'
+'Create a child span that becomes the current context for adding annotations. You will be asked for '
+'a service name that will be used to describe the span and a time offset, which indicates the time difference '
+'between the beginning of the parent and the beginning of the child.\n\n'
+'4) Send span\n'
+'When you are done, you can send the span to Zipkin. If it is a child span, the context will return to '
+'the parent. If the root span is sent, the program terminates.\n\n'
+'5) Print span\n'
+'Print all the information and annotations of the current span.\n\n'
+'6) Help\n'
+'Display this help.\n'
+)
+
 class DummySpan:
     def __init__(self, trace_id, service_name, timestamp, parent_id=None):
         self.trace_id = trace_id
@@ -173,7 +198,7 @@ def main(argv):
             1. Add annotation
             2. Add binary annotation
             3. Child span
-            4. Send span
+            4. Send span to Zipkin
             5. Print current span
             6. Help
 
@@ -213,9 +238,8 @@ def main(argv):
             currentSpan.printSpan()
         elif (option == "6"):
             print("Help".center(int(columns),'*'))
-            print("""
-                This tool allows you to send dummy traces to Zipkin. Initially, the application begins with a root span. You might add annotations, binary_annotations or child spans.
-                """)
+            print(helpString)
+            input("Press Enter to continue")
         else:
             print("Please enter a valid option")
 
