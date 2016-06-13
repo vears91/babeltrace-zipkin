@@ -3,6 +3,7 @@
 cd $HOME
 sudo apt-get install -y git
 sudo apt-get install -y python3-pip
+sudo apt-get install -y default-jre
 
 sudo apt-get install -y lttng-tools
 sudo apt-get install -y lttng-modules-dkms
