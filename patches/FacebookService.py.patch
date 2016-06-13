@@ -1,5 +1,5 @@
 --- fb303/FacebookService.py	2013-05-21 14:11:58.000000000 +0300
-+++ /usr/local/lib/python3.4/dist-packages/fb303/FacebookService.py	2016-03-19 01:25:21.970917700 +0200
++++ fb303/FacebookService.py	2016-03-19 01:25:21.970917700 +0200
 @@ -7,7 +7,7 @@
  #
  
