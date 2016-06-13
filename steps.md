@@ -38,6 +38,8 @@ This project takes the traces generated with blkin and sends them to a Zipkin co
 
 ### Installing dependencies in Ubuntu
 
+You can use the ubuntu.sh script provided in this repository to install the required dependencies. Otherwise you can follow these instructions.
+
 General tools
 
 ```
@@ -54,6 +56,8 @@ sudo pip3 install facebook-scribe
 sudo pip3 install thriftpy
 sudo pip3 install scribe_logger
 ```
+
+You must find the location of your Python3 packages and change fb303/FacebookService.py to use `from .ttypes import *`. The same must be done with scribe/scribe.py, to use `from .ttypes import *`. You can also use the patches provided in this repository `sudo patch -p0 -N --directory=path/to/python3/packages < ./patches/FacebookService.py.patch` and likewise with the other patch.
 
 Install babeltrace dependencies
 ```
@@ -77,9 +81,9 @@ pip3 install scribe
 pip3 install thrift3babeltrace
 pip3 install scribe_logger
 pip3 install facebook-scribe
-edit /usr/lib/python3.4/site-packages/fb303/FacebookService.py to use "from .ttypes import *"
-edit /usr/lib/python3.4/site-packages/scribe/scribe.py to use "from .ttypes import *"
 ```
+
+You must find the location of your Python3 packages and change fb303/FacebookService.py to use `from .ttypes import *`. The same must be done with scribe/scribe.py, to use `from .ttypes import *`. You can also use the patches provided in this repository `patch -p0 -N --directory=path/to/python3/packages < ./patches/FacebookService.py.patch` and likewise with the other patch.
 
 Install babeltrace dependencies
 ```
