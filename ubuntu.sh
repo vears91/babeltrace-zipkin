@@ -6,6 +6,7 @@ sudo apt-get install -y python3-pip
 git clone https://github.com/linuxbox2/blkin && cd ./blkin/blkin-lib
 make
 sudo make install
+cd $HOME
 
 sudo pip3 install --upgrade pip
 sudo pip3 install scribe
