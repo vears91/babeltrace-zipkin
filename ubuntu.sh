@@ -5,6 +5,7 @@ sudo apt-get install -y git
 sudo apt-get install -y python3-pip
 sudo apt-get install -y default-jre
 
+sudo apt-get install -y libboost-thread-dev
 sudo apt-get install -y lttng-tools
 sudo apt-get install -y lttng-modules-dkms
 sudo apt-get install -y liblttng-ust-dev
