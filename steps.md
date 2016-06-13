@@ -72,7 +72,6 @@ sudo apt-get install python3-babeltrace
 dnf install redhat-rpm-config
 dnf install python-devel
 dnf install python3-devel
-pip3 install thriftpy
 ```
 To install Scribe and Thrift dependencies
 ```
@@ -81,6 +80,7 @@ pip3 install scribe
 pip3 install thrift3babeltrace
 pip3 install scribe_logger
 pip3 install facebook-scribe
+pip3 install thriftpy
 ```
 
 You must find the location of your Python3 packages and change fb303/FacebookService.py to use `from .ttypes import *`. The same must be done with scribe/scribe.py, to use `from .ttypes import *`. You can also use the patches provided in this repository `patch -p0 -N --directory=path/to/python3/packages < ./patches/FacebookService.py.patch` and likewise with the other patch.
@@ -102,6 +102,18 @@ git clone https://github.com/openzipkin/zipkin && cd zipkin
 wget -O zipkin.jar 'https://search.maven.org/remote_content?g=io.zipkin.java&a=zipkin-server&v=LATEST&c=exec'
 java -jar zipkin.jar
 ```
+
+### Getting traces
+
+1. Build Ceph with blkin support (e.g. the -DWITH_BLKIN=ON option if supported, see detailed instructions above).
+2. Start Ceph (with the vstart.sh script, for example)
+3. Create a LTTng session `lttng create foo`
+4. List available userspace events `lttng list -u`. You should see available zipkin:timestamp or zipkin:keyval events.
+5. Enable the events to trace using `lttng enable-event -u eventname`
+6. Begin the tracing session using `lttng start`
+7. The operation of instrumented components will be traced for the duration of the session.
+8. Stop the tracing session with `lttng stop`
+9. You might verify the recorded events with `lttng view` and finally you can destroy the session with `lttng destroy` (the tracing files will not be destroyed with this).
 
 ### Sending the traces to Zipkin
 
