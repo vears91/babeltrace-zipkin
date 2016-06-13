@@ -3,6 +3,10 @@
 sudo apt-get install -y git
 sudo apt-get install -y python3-pip
 
+git clone https://github.com/linuxbox2/blkin && cd ./blkin/blkin-lib
+make
+sudo make install
+
 sudo pip3 install --upgrade pip
 sudo pip3 install scribe
 sudo pip3 install thrift3babeltrace
