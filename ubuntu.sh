@@ -1,8 +1,12 @@
 #!/bin/bash
 
+cd $HOME
 sudo apt-get install -y git
 sudo apt-get install -y python3-pip
 
+sudo apt-get install -y lttng-tools
+sudo apt-get install -y lttng-modules-dkms
+sudo apt-get install -y liblttng-ust-dev
 git clone https://github.com/linuxbox2/blkin && cd ./blkin/blkin-lib
 make
 sudo make install
