@@ -19,12 +19,6 @@ sudo pip3 install thrift3babeltrace
 sudo pip3 install facebook-scribe
 sudo pip3 install thriftpy
 sudo pip3 install scribe_logger
-DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
-echo "Detected Python3 libraries at the following location: "
-echo $DIR
-sudo patch -p0 --directory=$DIR < ./patches/scribe.py.patch
-sudo patch -p0 --directory=$DIR < ./patches/FacebookService.py.patch
-
 
 sudo apt-get install -y babeltrace
 sudo apt-get install -y python3-babeltrace
@@ -34,4 +28,9 @@ wget -O zipkin.jar 'https://search.maven.org/remote_content?g=io.zipkin.java&a=z
 java -jar zipkin.jar &
 cd ..
 
-git clone https://github.com/vears91/babeltrace-zipkin
+git clone https://github.com/vears91/babeltrace-zipkin && cd babeltrace-zipkin
+DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
+echo "Detected Python3 libraries at the following location: "
+echo $DIR
+sudo patch -p0 --directory=$DIR < ./patches/scribe.py.patch
+sudo patch -p0 --directory=$DIR < ./patches/FacebookService.py.patch
