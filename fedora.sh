@@ -54,7 +54,7 @@ if [ -d babeltrace-zipkin ]
 else
 	git clone https://github.com/vears91/babeltrace-zipkin && cd babeltrace-zipkin
 fi
-DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
+DIR=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
 echo "Detected Python3 libraries at the following location: "
 echo $DIR
 
