@@ -2,17 +2,15 @@
 
 cd ~
 
-su -
-dnf install -y redhat-rpm-config
-dnf install -y gcc-c++
-dnf install -y python-devel
-dnf install -y python3-devel
+sudo dnf install -y redhat-rpm-config
+sudo dnf install -y gcc-c++
+sudo dnf install -y python-devel
+sudo dnf install -y python3-devel
 
-dnf install -y boost-devel
-dnf install -y lttng-tools
-dnf install -y lttng-ust
-dnf install -y lttng-ust-devel
-exit
+sudo dnf install -y boost-devel
+sudo dnf install -y lttng-tools
+sudo dnf install -y lttng-ust
+sudo dnf install -y lttng-ust-devel
 
 if [ -d ./blkin/blkin-lib ]
 	then
@@ -21,21 +19,18 @@ else
 	git clone https://github.com/linuxbox2/blkin && cd ./blkin/blkin-lib
 fi
 make
-su -c 'make install'
+sudo make install
 cd $HOME
 
-su -
-pip3 install --upgrade pip
-pip3 install scribe
-pip3 install thrift3babeltrace
-pip3 install facebook-scribe
-pip3 install thriftpy
-pip3 install scribe_logger
+sudo pip3 install --upgrade pip
+sudo pip3 install scribe
+sudo pip3 install thrift3babeltrace
+sudo pip3 install facebook-scribe
+sudo pip3 install thriftpy
+sudo pip3 install scribe_logger
 
-dnf install -y babeltrace
-dnf install -y python3-babeltrace
-exit
-
+sudo dnf install -y babeltrace
+sudo dnf install -y python3-babeltrace
 
 if [ -d zipkin ]
 	then
@@ -62,17 +57,16 @@ DIR=$(python3 -c "import site; print(site.getsitepackages()[0])")
 echo "Detected Python3 libraries at the following location: "
 echo $DIR
 
-su -
-patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/scribe.py.patch 2>/dev/null
+
+sudo patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/scribe.py.patch 2>/dev/null
 if [ $? -eq 0 ];
 then
-    patch -p0 -N --directory=$DIR < ./patches/scribe.py.patch
+    sudo patch -p0 -N --directory=$DIR < ./patches/scribe.py.patch
 fi
 
-patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/FacebookService.py.patch 2>/dev/null
+sudo patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/FacebookService.py.patch 2>/dev/null
 if [ $? -eq 0 ];
 then
-    patch -p0 -N --directory=$DIR < ./patches/FacebookService.py.patch
+    sudo patch -p0 -N --directory=$DIR < ./patches/FacebookService.py.patch
 fi
-exit
 
