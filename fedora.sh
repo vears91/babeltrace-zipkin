@@ -3,15 +3,15 @@
 cd ~
 
 su -
-dnf install redhat-rpm-config
-dnf install gcc-c++
-dnf install python-devel
-dnf install python3-devel
+dnf install -y redhat-rpm-config
+dnf install -y gcc-c++
+dnf install -y python-devel
+dnf install -y python3-devel
 
-dnf install boost-devel
-dnf install lttng-tools
-dnf install lttng-ust
-dnf install lttng-ust-devel
+dnf install -y boost-devel
+dnf install -y lttng-tools
+dnf install -y lttng-ust
+dnf install -y lttng-ust-devel
 exit
 
 if [ -d ./blkin/blkin-lib ]
@@ -32,8 +32,8 @@ pip3 install facebook-scribe
 pip3 install thriftpy
 pip3 install scribe_logger
 
-dnf install babeltrace
-dnf install python3-babeltrace
+dnf install -y babeltrace
+dnf install -y python3-babeltrace
 exit
 
 
