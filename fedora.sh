@@ -6,6 +6,7 @@ sudo dnf install -y redhat-rpm-config
 sudo dnf install -y gcc-c++
 sudo dnf install -y python-devel
 sudo dnf install -y python3-devel
+sudo dnf install -y patch
 
 sudo dnf install -y boost-devel
 sudo dnf install -y lttng-tools
@@ -20,7 +21,7 @@ else
 fi
 make
 sudo make install
-cd $HOME
+cd ~
 
 sudo pip3 install --upgrade pip
 sudo pip3 install scribe
