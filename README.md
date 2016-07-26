@@ -13,6 +13,7 @@ Download the project using `git clone https://github.com/vears91/babeltrace-zipk
 For compatibility with Python3, this project uses [Thriftpy](https://github.com/eleme/thriftpy) and some modifications to Python's Thrift library.
 You can easily install them with pip3:
 ```
+pip3 install thrift
 pip3 install thrift3babeltrace
 pip3 install thriftpy
 pip3 install facebook-scribe
@@ -33,7 +34,7 @@ wget -O zipkin.jar 'https://search.maven.org/remote_content?g=io.zipkin.java&a=z
 java -jar zipkin.jar
 ```
 
-The collector will run by default on port 9410 and the web interface will run on port 9411.
+This will start up Zipkin. The collector will run by default on port 9410 and the web interface will run on port 9411.
 
 ## Usage
 
@@ -68,13 +69,9 @@ The application begins with a root span. You might add annotations, binary_annot
 6. Begin the tracing session using `lttng start`
 7. The operation of instrumented components will be traced for the duration of the session.
 8. Stop the tracing session with `lttng stop`
-9. You might verify the recorded events with `lttng view` and finally you can destroy the session with `lttng destroy`
+9. You might verify the recorded events with `lttng view` and finally you can destroy the session with `lttng destroy` (the tracing files will not be destroyed with this).
 
-
-Tracing will happen within a LTTng session, by enabling the 
-
-The blkin library 
-
+After these steps you can run babeltrace_zipkin.py as indicated above to send the traces to Zipkin and visualize them in the web interface.
 
 ## License
 
