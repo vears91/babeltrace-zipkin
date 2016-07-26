@@ -20,7 +20,7 @@ make install
 Ceph must be built with blkin support to enable the tracepoints.
 
 ```
-git clone https://github.com/cbodley/ceph.git
+git clone https://github.com/ceph/ceph.git
 cd ./ceph
 git fetch
 git checkout wip-blkin-osdc
