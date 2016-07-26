@@ -6,6 +6,7 @@ sudo dnf install -y redhat-rpm-config
 sudo dnf install -y gcc-c++
 sudo dnf install -y python-devel
 sudo dnf install -y python3-devel
+sudo dnf install -y python3-pip
 sudo dnf install -y patch
 
 sudo dnf install -y boost-devel
