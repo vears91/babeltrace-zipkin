@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>End-to-end Performance Visualization in Ceph  by vears91</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">End-to-end Performance Visualization in Ceph </h1>
+      <h2 class="project-tagline">Google Summer of Code 2016</h2>
+      <a href="https://github.com/vears91/babeltrace-zipkin" class="btn">View on GitHub</a>
+      <a href="https://github.com/vears91/babeltrace-zipkin/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/vears91/babeltrace-zipkin/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h3>
+<a id="background" class="anchor" href="#background" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Background</h3>
+
+<p><a href="http://ceph.com/">Ceph</a> is a software-defined storage solution that provides object storage, block storage and a filesystem. It was designed to provide excellent performance, reliability and scalability.</p>
+
+<p>Ceph participated in <a href="https://summerofcode.withgoogle.com/">Google Summer of Code 2016</a> as a mentoring organization. One of the accepted projects was this one, related to performance visualization of Ceph's components using the LTTng-based <a href="https://github.com/linuxbox2/blkin">blkin library</a> and <a href="https://github.com/openzipkin/zipkin">Twitter Zipkin</a>.</p>
+
+<h3>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h3>
+
+<p>Ceph provides the <a href="http://docs.ceph.com/docs/master/rbd/rbd/">librbd library</a> to interact with block storage, which uses <a href="http://docs.ceph.com/docs/master/rados/api/librados/">librados</a> to interact with the storage cluster. Code in librbd and librados needs to be instrumented with blkin to record events of interest to developers, using timestamp and key-value annotations.</p>
+
+<p>This project builds on previous tracing efforts that use blkin, to extend it to librbd and to <a href="https://github.com/axboe/fio/blob/master/engines/rbd.c">fio rbd engine</a> where trace information is initialized and passed to librbd. This project also puts up to date the tools to get the collected traces and send them to a Zipkin server.</p>
+
+<h3>
+<a id="work-done" class="anchor" href="#work-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work done</h3>
+
+<ol>
+<li>
+<p><strong>Babeltrace-zipkin:</strong> The previous babeltrace plugins needed to be updated to work with recent versions of Zipkin. </p>
+
+<ul>
+<li>Use thriftpy for compatibility with Python3.</li>
+<li>Fix the Thrift specification used to communicate with Zipkin.</li>
+<li>Provide scripts to install dependencies with support for Ubuntu and Fedora.</li>
+<li>See <a href="https://github.com/vears91/babeltrace-zipkin/commits/master">Github commits</a>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>blkin:</strong> Some minor features were added to blkin.</p>
+
+<ul>
+<li>Support for core annotations was added.</li>
+<li>Initialization for trace information structs (i.e. to initialize trace information in fio rbd engine).</li>
+<li>See pull requests <a href="https://github.com/linuxbox2/blkin/pull/1">1</a> and <a href="https://github.com/linuxbox2/blkin/pull/2">2</a>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>fio rbd engine:</strong> Support was added to initialize trace information and pass it to librbd from fio rbd engine.</p>
+
+<ul>
+<li>Add configure support to disable or enable fio rbd engine with blkin.</li>
+<li>Use rbd_aio_write_traced and rbd_aio_read_traced to pass the trace information to librbd.</li>
+<li>See <a href="https://github.com/axboe/fio/commit/a4c4c3460bd556cdb0aadc71d006556530144d01">Commit</a>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Ceph:</strong> Trace information was passed along from librbd to librados for aio reads and writes.</p>
+
+<ul>
+<li>Add rbd_aio_write_traced and rbd_aio_read_traced functions to librbd that take trace information as one of the parameters.</li>
+<li>Extend the librados API to take trace information from librbd</li>
+<li>See commits <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vear91">here</a> and <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vh4x">here</a>.</li>
+</ul>
+</li>
+</ol>
+
+<h3>
+<a id="getting-started" class="anchor" href="#getting-started" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting started</h3>
+
+<p>To see traces initialized from fio rbd engine:</p>
+
+<ol>
+<li>Install Zipkin, LTTng, babeltrace-zipkin and related dependencies. You might use one of the provided <a href="https://github.com/vears91/babeltrace-zipkin/tree/master/setup">scripts</a> or refer to this <a href="https://github.com/vears91/babeltrace-zipkin/blob/master/steps.md">documentation</a>.</li>
+<li>Build Ceph with blkin support (pass -DWITH_BLKIN=ON to cmake configuration).</li>
+<li>Get <a href="https://github.com/axboe/fio">fio</a> and build it with rbd support. If the blkin dependencies and the right version of librbd is installed in your system during the configure step you should see that blkin rbd tracing is enabled.</li>
+<li>Make sure Zipkin is running.</li>
+<li>Enable zipkin events and start an LTTng session <code>lttng create &amp;&amp; lttng enable-event zipkin:timestamp &amp;&amp; lttng start</code>.</li>
+<li>Run fio providing the location of your cluster's configuration file in the CEPH_CONF variable.</li>
+<li>Stop the tracing session and use babeltrace-zipkin to send the traces to Zipkin <code>python3 babeltrace_zipkin.py location/to/traces/ust/uid/1000/64-bit/ -s serverIp -p zipkinPort</code>
+</li>
+</ol>
+
+<h3>
+<a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+
+<p>Victor Araujo (<a href="https://github.com/vears91" class="user-mention">@vears91</a>).</p>
+
+<p>Ali Maredia (<a href="https://github.com/alimaredia" class="user-mention">@alimaredia</a>) was the mentor from Red Hat that supervised the project. Thank you very much for your support.
+Special thanks too for the valuable help of Casey Bodley (<a href="https://github.com/cbodley" class="user-mention">@cbodley</a>) and Jason Dillaman (<a href="https://github.com/dillaman" class="user-mention">@dillaman</a>).</p>
+
+<h3>
+<a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
+
+<p>For any question feel free to contact Victor Araujo at <a href="mailto:ve.ar91@gmail.com">ve.ar91@gmail.com</a>.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/vears91/babeltrace-zipkin">End-to-end Performance Visualization in Ceph </a> is maintained by <a href="https://github.com/vears91">vears91</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
