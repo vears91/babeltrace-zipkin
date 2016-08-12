@@ -31,6 +31,8 @@
 
 <p>Ceph provides the <a href="http://docs.ceph.com/docs/master/rbd/rbd/">librbd library</a> to interact with block storage, which uses <a href="http://docs.ceph.com/docs/master/rados/api/librados/">librados</a> to interact with the storage cluster. Code in librbd and librados needs to be instrumented with blkin to record events of interest to developers, using timestamp and key-value annotations.</p>
 
+<p>This allows the visualization of events in a timeline for a specific request, along with key-value pairs that can provide additional context.</p>
+
 <p>This project builds on previous tracing efforts that use blkin, to extend it to librbd and to <a href="https://github.com/axboe/fio/blob/master/engines/rbd.c">fio rbd engine</a> where trace information is initialized and passed to librbd. This project also puts up to date the tools to get the collected traces and send them to a Zipkin server.</p>
 
 <p><img src="https://github.com/vears91/githubpages/raw/master/trace.png" alt="screenshot">
@@ -105,6 +107,15 @@
 
 <p>Ali Maredia (<a href="https://github.com/alimaredia" class="user-mention">@alimaredia</a>) was the mentor from Red Hat that supervised the project. Thank you very much for your support.
 Special thanks too for the valuable help of Casey Bodley (<a href="https://github.com/cbodley" class="user-mention">@cbodley</a>) and Jason Dillaman (<a href="https://github.com/dillaman" class="user-mention">@dillaman</a>).</p>
+
+<h3>
+<a id="work-to-do" class="anchor" href="#work-to-do" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work to do</h3>
+
+<p>Some work begun on instrumentation for RGW. However, there is a bug with lttng <a href="http://tracker.ceph.com/issues/15564">http://tracker.ceph.com/issues/15564</a> that causes errors in PUT container operations.</p>
+
+<p>Due to the high number of I/O requests that can happen, sampling might be of interest.</p>
+
+<p>More events and key values need to be registered to improve the quality of the information collected by this type of tracing.</p>
 
 <h3>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
