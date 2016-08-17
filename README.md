@@ -16,7 +16,7 @@ You can easily install them with pip3:
 pip3 install thrift
 pip3 install thrift3babeltrace
 pip3 install thriftpy
-pip3 install facebook-scribe
+pip3 install facebook-scribe-py3
 pip3 install scribe_logger
 ```
 You will also need the [Babeltrace](http://diamon.org/babeltrace/#getting) python bindings.

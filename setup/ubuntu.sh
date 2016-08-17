@@ -22,7 +22,7 @@ cd $HOME
 sudo pip3 install --upgrade pip
 sudo pip3 install scribe
 sudo pip3 install thrift3babeltrace
-sudo pip3 install facebook-scribe
+sudo pip3 install facebook-scribe-py3
 sudo pip3 install thriftpy
 sudo pip3 install scribe_logger
 
