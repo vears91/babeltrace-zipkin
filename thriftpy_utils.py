@@ -50,9 +50,13 @@ def create_endpoint(ipv4, port, service_name):
     :service_name: human readable name that identifies the service of the endpoint
     :returns: zipkin endpoint object
     """
+
     if (ipv4 == ""):
         ipv4 = "0.0.0.0"
-    ipv4 = int(ipaddress.IPv4Address(ipv4))
+    try:
+        ipv4 = int(ipaddress.IPv4Address(ipv4))
+    except:
+        ipv4 = "0.0.0.0"
     port = int(port)
 
     return zipkin_core.Endpoint(
