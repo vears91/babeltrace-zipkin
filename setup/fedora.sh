@@ -18,7 +18,7 @@ if [ -d ./blkin/blkin-lib ]
 	then
 	cd blkin/blkin-lib
 else
-	git clone https://github.com/linuxbox2/blkin && cd ./blkin/blkin-lib
+	git clone https://github.com/ceph/blkin && cd ./blkin/blkin-lib
 fi
 make
 sudo make install
@@ -54,21 +54,5 @@ if [ -d babeltrace-zipkin ]
 	git pull
 else
 	git clone https://github.com/vears91/babeltrace-zipkin && cd babeltrace-zipkin
-fi
-DIR=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-echo "Detected Python3 libraries at the following location: "
-echo $DIR
-
-
-sudo patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/scribe.py.patch 2>/dev/null
-if [ $? -eq 0 ];
-then
-    sudo patch -p0 -N --directory=$DIR < ./patches/scribe.py.patch
-fi
-
-sudo patch -p0 -N --dry-run --silent --directory=$DIR < ./patches/FacebookService.py.patch 2>/dev/null
-if [ $? -eq 0 ];
-then
-    sudo patch -p0 -N --directory=$DIR < ./patches/FacebookService.py.patch
 fi
 
