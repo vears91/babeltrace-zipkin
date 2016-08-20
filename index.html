@@ -36,12 +36,21 @@
 <p>This project builds on previous tracing efforts that use blkin, to extend it to librbd and to <a href="https://github.com/axboe/fio/blob/master/engines/rbd.c">fio rbd engine</a> where trace information is initialized and passed to librbd. This project also puts up to date the tools to get the collected traces and send them to a Zipkin server.</p>
 
 <p><img src="https://github.com/vears91/githubpages/raw/master/spans.png" alt="screenshot">
-_Events can be traced and visualized in Zipkin, including timestamps and key-value annotations. The screenshot shows events recorded in OSDs, PGs, the filejournal while performing an aio_write started from fio rbd engine.</p>
+Events can be traced and visualized in Zipkin, including timestamps and key-value annotations. The screenshot shows events recorded in OSDs, PGs, the filejournal while performing an aio_write started from fio rbd engine.</p>
 
 <h3>
 <a id="work-done" class="anchor" href="#work-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work done</h3>
 
 <ol>
+<li>
+<p><strong>Ceph:</strong> Trace information was passed along from librbd to librados for aio reads and writes.</p>
+
+<ul>
+<li>Add rbd_aio_write_traced and rbd_aio_read_traced functions to librbd that take trace information as one of the parameters.</li>
+<li>Extend the librados API to take trace information from librbd</li>
+<li>See commits <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vear91">here</a> and <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vh4x">here</a>.</li>
+</ul>
+</li>
 <li>
 <p><strong>Babeltrace-zipkin:</strong> The previous babeltrace plugins needed to be updated to work with recent versions of Zipkin. </p>
 
@@ -50,16 +59,6 @@ _Events can be traced and visualized in Zipkin, including timestamps and key-val
 <li>Fix the Thrift specification used to communicate with Zipkin.</li>
 <li>Provide scripts to install dependencies with support for Ubuntu and Fedora.</li>
 <li>See <a href="https://github.com/vears91/babeltrace-zipkin/commits/master">Github commits</a>
-</li>
-</ul>
-</li>
-<li>
-<p><strong>blkin:</strong> Some minor features were added to blkin.</p>
-
-<ul>
-<li>Support for core annotations was added.</li>
-<li>Initialization for trace information structs (i.e. to initialize trace information in fio rbd engine).</li>
-<li>See pull requests <a href="https://github.com/linuxbox2/blkin/pull/1">1</a> and <a href="https://github.com/linuxbox2/blkin/pull/2">2</a>
 </li>
 </ul>
 </li>
@@ -74,12 +73,13 @@ _Events can be traced and visualized in Zipkin, including timestamps and key-val
 </ul>
 </li>
 <li>
-<p><strong>Ceph:</strong> Trace information was passed along from librbd to librados for aio reads and writes.</p>
+<p><strong>blkin:</strong> Some minor features were added to blkin.</p>
 
 <ul>
-<li>Add rbd_aio_write_traced and rbd_aio_read_traced functions to librbd that take trace information as one of the parameters.</li>
-<li>Extend the librados API to take trace information from librbd</li>
-<li>See commits <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vear91">here</a> and <a href="https://github.com/vears91/ceph/commits/wip-rebase-gsoc?author=vh4x">here</a>.</li>
+<li>Support for core annotations was added.</li>
+<li>Initialization for trace information structs (i.e. to initialize trace information in fio rbd engine).</li>
+<li>See pull requests <a href="https://github.com/linuxbox2/blkin/pull/1">1</a>, <a href="https://github.com/linuxbox2/blkin/pull/2">2</a> and <a href="https://github.com/ceph/blkin/pull/1">3</a>
+</li>
 </ul>
 </li>
 </ol>
