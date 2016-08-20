@@ -35,8 +35,8 @@
 
 <p>This project builds on previous tracing efforts that use blkin, to extend it to librbd and to <a href="https://github.com/axboe/fio/blob/master/engines/rbd.c">fio rbd engine</a> where trace information is initialized and passed to librbd. This project also puts up to date the tools to get the collected traces and send them to a Zipkin server.</p>
 
-<p><img src="https://github.com/vears91/githubpages/raw/master/trace.png" alt="screenshot">
-<em>Events can be traced and visualized in Zipkin, including timestamps and key-value annotations (not all of the events of the screenshot are currently implemented)</em></p>
+<p><img src="https://github.com/vears91/githubpages/raw/master/spans.png" alt="screenshot">
+_Events can be traced and visualized in Zipkin, including timestamps and key-value annotations. The screenshot shows events recorded in OSDs, PGs, the filejournal while performing an aio_write started from fio rbd engine.</p>
 
 <h3>
 <a id="work-done" class="anchor" href="#work-done" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work done</h3>
@@ -92,13 +92,17 @@
 <ol>
 <li>Install Zipkin, LTTng, babeltrace-zipkin and related dependencies. You might use one of the provided <a href="https://github.com/vears91/babeltrace-zipkin/tree/master/setup">scripts</a> or refer to this <a href="https://github.com/vears91/babeltrace-zipkin/blob/master/steps.md">documentation</a>.</li>
 <li>Build and install Ceph with blkin support (pass -DWITH_BLKIN=ON to cmake configuration).</li>
+<li>Start a Ceph cluster. You might need to set <code>LD_PRELOAD=liblttng-ust-fork.so</code>
+</li>
 <li>Get <a href="https://github.com/axboe/fio">fio</a> and configure (<code>LDFLAGS="-Lpath/to/build/lib -Wl,-rpath,path/to/build/lib" ./configure --extra-cflags="-I/usr/local/include/"</code>) and build it with rbd support. If the blkin dependencies and the right version of librbd is installed in your system during the configure step you should see that blkin rbd tracing is enabled.</li>
 <li>Make sure Zipkin is running.</li>
 <li>Enable zipkin events and start an LTTng session <code>lttng create &amp;&amp; lttng enable-event zipkin:timestamp &amp;&amp; lttng start</code>.</li>
-<li>Run fio providing the location of your cluster's configuration file in the CEPH_CONF variable.</li>
+<li>Run fio providing the location of your cluster's configuration file in the CEPH_CONF variable. You might need to set LD_LIBRARY_PATH to the location of the blkin libraries.</li>
 <li>Stop the tracing session and use babeltrace-zipkin to send the traces to Zipkin <code>python3 babeltrace_zipkin.py location/to/traces/ust/uid/1000/64-bit/ -s serverIp -p zipkinPort</code>
 </li>
 </ol>
+
+<p>This <a href="https://raw.githubusercontent.com/vears91/blkin-scripts/master/buildrbd.sh">script</a> can be modified to repeat runs after dependencies have been set up correctly.</p>
 
 <h3>
 <a id="authors-and-contributors" class="anchor" href="#authors-and-contributors" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Authors and Contributors</h3>
@@ -111,11 +115,12 @@ Special thanks too for the valuable help of Casey Bodley (<a href="https://githu
 <h3>
 <a id="work-to-do" class="anchor" href="#work-to-do" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Work to do</h3>
 
-<p>Some work begun on instrumentation for RGW. However, there is a bug with lttng <a href="http://tracker.ceph.com/issues/15564">http://tracker.ceph.com/issues/15564</a> that causes errors in PUT container operations.</p>
-
-<p>Due to the high number of I/O requests that can happen, sampling might be of interest.</p>
-
-<p>More events and key values need to be registered to improve the quality of the information collected by this type of tracing.</p>
+<ul>
+<li><p>Some work begun on instrumentation for RGW. However, there is a <a href="http://tracker.ceph.com/issues/15564">bug</a> with LTTng that causes errors in PUT container operations.</p></li>
+<li><p>Due to the high number of I/O requests that can happen, sampling might be of interest.</p></li>
+<li><p>More events and key values need to be registered to improve the quality of the information collected by this type of tracing.</p></li>
+<li><p>Building the blkin submodule has to be fixed, as linking can cause an issue with <a href="http://lists.ceph.com/pipermail/ceph-users-ceph.com/2015-September/004829.html">duplicate probes</a></p></li>
+</ul>
 
 <h3>
 <a id="support-or-contact" class="anchor" href="#support-or-contact" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support or Contact</h3>
