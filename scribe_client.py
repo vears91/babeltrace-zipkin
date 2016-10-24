@@ -62,7 +62,8 @@ class ScribeClient(object):
 
 
     def log(self, category, message):
-        self.transport.open()
+        if (not self.transport.isOpen()):
+            self.transport.open()
         message = base64.b64encode(message).strip()
         log_entry = scribe.LogEntry(category, message)
         result = self.client.Log(messages=[log_entry])
