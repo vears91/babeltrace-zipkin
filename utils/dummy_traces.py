@@ -46,8 +46,8 @@ helpString = (
 'When you add a child span, the current context is changed to the child and the '
 'annotations are added to it. To return to the previous level, send the span to Zipkin.\n'
 '1) Add an annotation\n\n'
-'Annotations represent an event with a timestamp. The value is a short description of the event ' 
-'or the value of a core annotation defined in Zipkin\'s Thrift specification (like "cs" for Client ' 
+'Annotations represent an event with a timestamp. The value is a short description of the event '
+'or the value of a core annotation defined in Zipkin\'s Thrift specification (like "cs" for Client '
 'Start or "ss" for Server Send).\n\n'
 '2) Add binary annotation\n'
 'Binary annotations are key-value pairs used to augment the context of what is happening in '
@@ -82,8 +82,8 @@ class DummySpan:
 
         :param serviceName: Descriptive name of the service of the endpoint for the child.
         :returns: DummySpan with parent_id set to the ID of this span.
-        """              
-        return DummySpan(serviceName, self.span_id)    
+        """
+        return DummySpan(serviceName, self.span_id)
 
     def addAnnotation(self, value, timeOffset):
         ts = self.timestamp+int(timeOffset)
@@ -184,10 +184,10 @@ def main(argv):
             currentSpan = context.pop()
         except:
             # No more spans to process, we are done.
-            print("Root span has been sent to Zipkin. Quitting now.".center(int(columns),'*'))        
+            print("Root span has been sent to Zipkin. Quitting now.".center(int(columns),'*'))
             return
         os.system('clear')
-        print("Main menu".center(int(columns),'*')) 
+        print("Main menu".center(int(columns),'*'))
         print("Current context:")
         print(("Trace ID: "+str(currentSpan.trace_id)))
         print(("Parent ID: "+str(currentSpan.parent_id)))
@@ -207,7 +207,7 @@ def main(argv):
         os.system('clear')
 
         if (option == "1"):
-            print("Creating new annotation".center(int(columns),'*'))        
+            print("Creating new annotation".center(int(columns),'*'))
             offset = numberInput("Enter time offset from beginning of span (microseconds): ")
             value = input("Enter value: ")
             currentSpan.addAnnotation(value, offset)
@@ -223,7 +223,7 @@ def main(argv):
             service_name = input("Enter service name: ")
             span = DummySpan(trace_id, service_name, currentSpan.timestamp+offset, currentSpan.span_id)
             context.append(currentSpan)
-            context.append(span)  
+            context.append(span)
             continue
         elif (option == "4"):
             print("Sending current span to Zipkin".center(int(columns),'*'))
