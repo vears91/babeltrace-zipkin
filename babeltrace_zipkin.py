@@ -37,149 +37,12 @@ import os
 import getopt
 from collections import defaultdict
 from babeltrace import *
-from zipkin_client import ZipkinClient
+from zipkin_scribe_client import ZipkinScribeClient
 import thriftpy
 from thriftpy.transport import TMemoryBuffer
 from thriftpy.protocol.binary import TBinaryProtocol
-from thriftpy_utils import *
-
-
-thrift_filepath = os.path.join(os.path.dirname(__file__),
-                               'zipkinCore.thrift')
-zipkin_core = thriftpy.load(thrift_filepath, module_name="zipkinCore_thrift")
 
 HELP = "Usage: python3 babeltrace_zipkin.py path/to/file -s <server> -p <port>"
-
-
-def generate_annotation_lists(zipkin, events, spans, annotations_dict, binary_annotations_dict):
-    """
-    Stores the annotations received per span in a dictionary keyed by zipkin span identifiers
-    :param zipkin: zipkin_client object
-    :param events: collection of events from babeltrace
-    :param spans: set object to store span identifiers
-    :param annotations_dict: defaultdict to hold the list of annotations for each span
-    :param binary_annotations_dict: defaultdict to hold the list of binary annotations for each span
-    """        
-    for event in events:
-        #Extract event information
-        name = event.name
-        span_id = event["span_id"]
-        trace_id = event["trace_id"]
-        parent_span_id = event["parent_span_id"]
-        port = event["port_no"]
-        service_name = event["service_name"]
-        ip = event["ip"]
-        #Use CS as default value for Zipkin annotations
-        value = "cs"
-        if "core_annotation" in event:
-            value =  event["core_annotation"]
-        if "event" in event:
-            event_name = event["event"]
-        timestamp = str(event.timestamp)[:-3]
-        key = str(span_id) + ":" + str(trace_id) + ":" + str(parent_span_id) + ":" + service_name 
-        
-        # Add the key to the set
-        spans.add(key)
-        
-        try:
-            provider, kind = name.split(":")
-            if provider != "zipkin":
-                raise
-        except:
-            continue
-
-        # Create and add the annotation to the dictionaries of annotations
-        if (kind == "keyval_integer" or kind == "keyval_string"):
-            annotation = zipkin.create_binary_annotation(service_name, ip, port, event["key"], str(event["val"]))
-            binary_annotations_dict[key].append(annotation)
-        elif (kind == "timestamp" or kind == "timestamp_core"):
-            annotation = zipkin.create_time_annotation(service_name, ip, port, timestamp, event_name)
-            annotations_dict[key].append(annotation)
-
-def send_annotation_single(zipkin, events):
-    """
-    Sends each annotation in a separate thrift object
-
-    :param zipkin: zipkin_client object
-    :param events: collection of events from babeltrace
-    """        
-    for event in events:
-        #Extract event information
-        name = event.name
-        span_id = event["span_id"]
-        trace_id = event["trace_id"]
-        parent_span_id = event["parent_span_id"]
-        port = event["port_no"]
-        service_name = event["service_name"]
-        ip = event["ip"]
-        #Use CS as default value for Zipkin annotations
-        value = "cs"
-        if "core_annotation" in event:
-            value =  event["core_annotation"]
-        if "event" in event:
-            event_name = event["event"]
-        timestamp = str(event.timestamp)[:-3]
-
-        try:
-            provider, kind = name.split(":")
-            if provider != "zipkin":
-                raise
-        except:
-            continue
-
-        # Create and add the annotation to the dictionaries of annotations
-        if (kind == "keyval_integer" or kind == "keyval_string"):
-            annotation = zipkin.create_binary_annotation(service_name, ip, port, event["key"], str(event["val"]))
-            span_id = int(span_id)
-            trace_id = int(trace_id)
-            parent_span_id =  int(parent_span_id)
-            thrift_span = create_span(span_id, parent_span_id, (trace_id), service_name, [], [annotation])
-            print(thrift_span)
-            message = thrift_obj_in_bytes(thrift_span)
-            zipkin.scribe_record(message)
-
-        elif (kind == "timestamp" or kind == "timestamp_core"):
-            annotation = zipkin.create_time_annotation(service_name, ip, port, timestamp, event_name)
-            span_id = int(span_id)
-            trace_id = int(trace_id)
-            parent_span_id =  int(parent_span_id)
-            thrift_span = create_span(span_id, parent_span_id, (trace_id), service_name, [annotation], [])
-            print(thrift_span)
-            message = thrift_obj_in_bytes(thrift_span)
-            zipkin.scribe_record(message)
-
-def send_annotation_lists(zipkin, events):
-    """
-    Builds lists grouping the annotations that correspond to each span, to send them as a whole
-
-    :param zipkin: zipkin_client object
-    :param events: collection of events from babeltrace
-    """  
-    #Initialize data structures to prepare the zipkin annotations
-    spans = set([])
-    annotations_dict = defaultdict(list)
-    binary_annotations_dict = defaultdict(list)
-
-    generate_annotation_lists(zipkin, events, spans, annotations_dict, binary_annotations_dict)
-
-    # Iterate over the set to get and send the corresponding annotations of each span
-    for span in spans:
-        try:
-            span_id, trace_id, parent_span_id, service_name = span.split(":")
-        except:
-            continue
-        span_id = int(span_id)
-        trace_id = int(trace_id)
-        parent_span_id =  int(parent_span_id)
-        annotations = annotations_dict[span]
-        binary_annotations = binary_annotations_dict[span]
-        thrift_span = create_span(span_id, parent_span_id, (trace_id), service_name, annotations, binary_annotations)
-        print(thrift_span)
-        message = thrift_obj_in_bytes(thrift_span)
-        # Log to Scribe
-        zipkin.scribe_record(message)
-
-    zipkin.close()
 
 def main(argv):
     try:
@@ -208,7 +71,7 @@ def main(argv):
         port = 1463
 
     # Open connection with scribe
-    zipkin = ZipkinClient(port,  server)
+    zipkin = ZipkinScribeClient(port,  server)
 
     # Create TraceCollection and add trace:
     traces = TraceCollection()
@@ -216,7 +79,7 @@ def main(argv):
     if trace_handle is None:
         raise IOError("Error adding trace")
     
-    send_annotation_single(zipkin, traces.events)
+    zipkin.send_annotations(traces.events)
     #send_annotation_lists(zipkin, traces.events)
     return
 
