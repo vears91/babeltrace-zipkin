@@ -38,6 +38,7 @@ import getopt
 from collections import defaultdict
 from babeltrace import *
 from zipkin_scribe_client import ZipkinScribeClient
+from http_client import HttpClient
 import thriftpy
 from thriftpy.transport import TMemoryBuffer
 from thriftpy.protocol.binary import TBinaryProtocol
@@ -57,6 +58,7 @@ def main(argv):
 
     server = None
     port = None
+    transport = None
     for opt, arg in opts:
         if opt == '-h':
             raise TypeError(HELP)
@@ -64,14 +66,23 @@ def main(argv):
             server = arg
         elif opt == '-p':
             port = arg
+        elif opt == '-t':
+            transport = arg
 
     if not server:
-        server = "83.212.113.88"
-    if not port:
-        port = 1463
+        server = "127.0.0.1"
 
     # Open connection with scribe
-    zipkin = ZipkinScribeClient(port,  server)
+    #ZipkinScribeClient(port,  server)
+    zipkin = None
+    if (transport=='scribe'):
+        zipkin = ZipkinScribeClient(port,  server)
+        if not port:
+            port = 9410
+    else:
+        zipkin = HttpClient(port,  server)
+        if not port:
+            port = 9411
 
     # Create TraceCollection and add trace:
     traces = TraceCollection()
@@ -80,7 +91,6 @@ def main(argv):
         raise IOError("Error adding trace")
     
     zipkin.send_annotations(traces.events)
-    #send_annotation_lists(zipkin, traces.events)
     return
 
 if __name__ == "__main__":
