@@ -57,7 +57,6 @@ class ZipkinScribeClient(ScribeClient):
     def generate_annotation_lists(self, events, spans, annotations_dict, binary_annotations_dict):
         """
         Stores the annotations received per span in a dictionary keyed by zipkin span identifiers
-        :param zipkin: zipkin_client object
         :param events: collection of events from babeltrace
         :param spans: set object to store span identifiers
         :param annotations_dict: defaultdict to hold the list of annotations for each span
@@ -103,15 +102,14 @@ class ZipkinScribeClient(ScribeClient):
         """
         Sends each annotation in a separate thrift object
 
-        :param zipkin: zipkin_client object
         :param events: collection of events from babeltrace
         """
         for event in events:
             #Extract event information
             name = event.name
-            span_id = event["span_id"]
-            trace_id = event["trace_id"]
-            parent_span_id = event["parent_span_id"]
+            span_id = int(event["span_id"])
+            trace_id = int(event["trace_id"])
+            parent_span_id = int(event["parent_span_id"])
             port = event["port_no"]
             service_name = event["service_name"]
             ip = event["ip"]
@@ -122,40 +120,27 @@ class ZipkinScribeClient(ScribeClient):
             if "event" in event:
                 event_name = event["event"]
             timestamp = str(event.timestamp)[:-3]
-
+            # Create and add the annotation
             try:
                 provider, kind = name.split(":")
-                if provider != "zipkin":
-                    raise
             except:
                 continue
-
-            # Create and add the annotation to the dictionaries of annotations
+            annotation = None
+            thrift_span = None
             if (kind == "keyval_integer" or kind == "keyval_string"):
                 annotation = self.create_binary_annotation(service_name, ip, port, event["key"], str(event["val"]))
-                span_id = int(span_id)
-                trace_id = int(trace_id)
-                parent_span_id =  int(parent_span_id)
-                thrift_span = create_span(span_id, parent_span_id, (trace_id), service_name, [], [annotation])
-                #print(thrift_span)
-                message = thrift_obj_in_bytes(thrift_span)
-                self.scribe_record(message)
-
+                thrift_span = create_span(span_id, parent_span_id, trace_id, service_name, [], [annotation])
             elif (kind == "timestamp" or kind == "timestamp_core"):
                 annotation = self.create_time_annotation(service_name, ip, port, timestamp, event_name)
-                span_id = int(span_id)
-                trace_id = int(trace_id)
-                parent_span_id =  int(parent_span_id)
-                thrift_span = create_span(span_id, parent_span_id, (trace_id), service_name, [annotation], [])
-                #print(thrift_span)
-                message = thrift_obj_in_bytes(thrift_span)
-                self.scribe_record(message)
+                thrift_span = create_span(span_id, parent_span_id, trace_id, service_name, [annotation], [])
+
+            message = thrift_obj_in_bytes(thrift_span)
+            self.scribe_record(message)
 
     def send_annotation_lists(self, events):
         """
         Builds lists grouping the annotations that correspond to each span, to send them as a whole
 
-        :param zipkin: zipkin_client object
         :param events: collection of events from babeltrace
         """
         #Initialize data structures to prepare the zipkin annotations
