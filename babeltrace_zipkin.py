@@ -52,7 +52,7 @@ def main(argv):
         raise TypeError(HELP)
 
     try:
-        opts, args = getopt.getopt(argv[1:], "hs:p:")
+        opts, args = getopt.getopt(argv[1:], "hs:p:t")
     except getopt.GetoptError:
         raise TypeError(HELP)
 
@@ -73,14 +73,14 @@ def main(argv):
         server = "127.0.0.1"
 
     # Open connection with scribe
-    #ZipkinScribeClient(port,  server)
     zipkin = None
     if (transport=='scribe'):
-        zipkin = ZipkinScribeClient(port,  server)
+        zipkin = ZipkinScribeClient(port, server)
         if not port:
             port = 9410
     else:
-        zipkin = HttpClient(port,  server)
+        transport = "http"
+        zipkin = HttpClient(port, server)
         if not port:
             port = 9411
 
@@ -90,7 +90,9 @@ def main(argv):
     if trace_handle is None:
         raise IOError("Error adding trace")
     
+    print("Sending traces to "+server+":"+port+" using "+transport+"\n")
     zipkin.send_annotations(traces.events)
+    print("Done sending\n")
     return
 
 if __name__ == "__main__":
