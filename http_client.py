@@ -59,7 +59,9 @@ class HttpClient(object):
             "value": value
             })
 
-    def create_span(self, span_id, parent_span_id, trace_id, span_name, annotations, binary_annotations, timestamp=None, debug=False):
+    def create_span(self, span_id, parent_span_id, trace_id, trace_name,
+                    annotations, binary_annotations, timestamp=None,
+                    debug=False):
         """
         Creates a zipkin span object.
 
@@ -71,7 +73,7 @@ class HttpClient(object):
         """
         return json.dumps([{
             "traceId": format(trace_id, 'x'),
-            "name": span_name,
+            "name": trace_name,
             "id": format(span_id, 'x'),
             "parentId": format(parent_span_id, 'x'),
             "timestamp": timestamp,
@@ -95,6 +97,7 @@ class HttpClient(object):
             trace_id = event["trace_id"]
             parent_span_id = event["parent_span_id"]
             port = event["port_no"]
+            trace_name = event["trace_name"]
             service_name = event["service_name"]
             ip = event["ip"]
             #Use CS as default value for Zipkin annotations
@@ -115,7 +118,9 @@ class HttpClient(object):
                 span_id = int(span_id)
                 trace_id = int(trace_id)
                 parent_span_id =  int(parent_span_id)
-                json_span = self.create_span(span_id, parent_span_id, (trace_id), service_name, [], [annotation])
+                json_span = self.create_span(span_id, parent_span_id,
+                                             (trace_id), trace_name, [],
+                                             [annotation])
                 self.send_to_zipkin(json_span)
 
             elif (kind == "timestamp" or kind == "timestamp_core"):
@@ -123,7 +128,10 @@ class HttpClient(object):
                 span_id = int(span_id)
                 trace_id = int(trace_id)
                 parent_span_id =  int(parent_span_id)
-                json_span = self.create_span(span_id, parent_span_id, (trace_id), service_name, [annotation], [], timestamp=timestamp)
+                json_span = self.create_span(span_id, parent_span_id,
+                                             (trace_id), trace_name,
+                                             [annotation], [],
+                                             timestamp=timestamp)
                 self.send_to_zipkin(json_span)
 
     def send_to_zipkin(self, span):

@@ -111,6 +111,7 @@ class ZipkinScribeClient(ScribeClient):
             trace_id = int(event["trace_id"])
             parent_span_id = int(event["parent_span_id"])
             port = event["port_no"]
+            trace_name = event["trace_name"]
             service_name = event["service_name"]
             ip = event["ip"]
             #Use CS as default value for Zipkin annotations
@@ -129,10 +130,10 @@ class ZipkinScribeClient(ScribeClient):
             thrift_span = None
             if (kind == "keyval_integer" or kind == "keyval_string"):
                 annotation = self.create_binary_annotation(service_name, ip, port, event["key"], str(event["val"]))
-                thrift_span = create_span(span_id, parent_span_id, trace_id, service_name, [], [annotation])
+                thrift_span = create_span(span_id, parent_span_id, trace_id, trace_name, [], [annotation])
             elif (kind == "timestamp" or kind == "timestamp_core"):
                 annotation = self.create_time_annotation(service_name, ip, port, timestamp, event_name)
-                thrift_span = create_span(span_id, parent_span_id, trace_id, service_name, [annotation], [])
+                thrift_span = create_span(span_id, parent_span_id, trace_id, trace_name, [annotation], [])
 
             message = thrift_obj_in_bytes(thrift_span)
             self.scribe_record(message)
