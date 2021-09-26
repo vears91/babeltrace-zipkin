@@ -91,24 +91,23 @@ class HttpClient(object):
         :param events: collection of events from babeltrace
         """
         for event in events:
-            #Extract event information
-            name = event.name
-            span_id = event["span_id"]
-            trace_id = event["trace_id"]
-            parent_span_id = event["parent_span_id"]
-            port = event["port_no"]
-            trace_name = event["trace_name"]
-            service_name = event["service_name"]
-            ip = event["ip"]
-            #Use CS as default value for Zipkin annotations
-            value = "cs"
-            if "core_annotation" in event:
-                value =  event["core_annotation"]
-            if "event" in event:
-                event_name = event["event"]
-            timestamp = str(event.timestamp)[:-3]
-
             try:
+                #Extract event information
+                name = event.name
+                span_id = event["span_id"]
+                trace_id = event["trace_id"]
+                parent_span_id = event["parent_span_id"]
+                port = event["port_no"]
+                trace_name = event["trace_name"]
+                service_name = event["service_name"]
+                ip = event["ip"]
+                #Use CS as default value for Zipkin annotations
+                value = "cs"
+                if "core_annotation" in event:
+                    value =  event["core_annotation"]
+                if "event" in event:
+                    event_name = event["event"]
+                timestamp = str(event.timestamp)[:-3]
                 provider, kind = name.split(":")
             except:
                 continue
